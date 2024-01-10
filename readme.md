@@ -46,11 +46,31 @@ Once flashing is finished, insert the card into Jetson Nano and supply power to 
 
 For `unique_number`, use the numbered ID of each car.
 
-## Wireless Network for MWireless (to be changed for internal network)
+- App Partition Size: set maximum capacity available.
+- Select Nvpmodel Mode: set MAXN
+
+## Wireless Network (Lab Router)
+Setup WiFi as described in the lab network documentation below. (You will need permission to view)
+
+https://docs.google.com/document/d/1-JioNW9RgK9IkaMXef70A-jW1nOKywiEXf0jTHesY2Q/edit?usp=sharing
+
+As of the point of writing this documentation, the designated access credential is as follows:
+
+```
+SSID: fluent-5
+Password: This-Network-Is-For-Robot-Use-Only
+```
+
+### Recommended setup for manual IP address
+While it is not requirement, it is recommended to setup the IP address of each mushr car in the following format.
+```
+IP address: 192.168.1.(car number + 10) (i.e. 192.168.1.12 for car 2)
+subnet mask: 255.255.255.0
+```
 
 ## Remote Development Environment 
 
-### on VNC
+### On VNC
 
 By default, the given image has the `Desktop Sharing` feature of Ubuntu disabled. We can enable it back to connect over VNC.
 
@@ -83,9 +103,26 @@ The `Desktop Sharing` feature should now be accessible on the `Settings` panel.
 
 Setup a password, and uncheck `confirm everytime` option.
 
-### on SSH
+Next, setup VNC server to run at startup.
+```
+mkdir -p ~/.config/autostart
 
-Remote operations over SSH can be setup as usual. (details to be added)
+cp /usr/share/applications/vino-server.desktop ~/.config/autostart/.
+```
+
+Then, disable encryption and prompt.
+```
+gsettings set org.gnome.Vino require-encryption false
+gsettings set org.gnome.Vino prompt-enabled false
+```
+
+Finally, reboot Jetson Nano.
+
+
+
+### On SSH
+
+Remote operations over SSH can be setup as usual. Normally, there is no need for an additional setup.
 
 ## MuSHR Noetic Docker
 
@@ -112,7 +149,7 @@ Also, it is recommended to execute the following commands for previlage issues.
 https://docs.docker.com/engine/install/linux-postinstall/
 
 ```
-sudo groupadd docker
+#sudo groupadd docker
 sudo usermod -aG docker $USER
 newgrp docker
 ```
@@ -122,10 +159,72 @@ We can verify the fix in previlage with the following command.
 docker run hello-world
 ```
 
+If it runs successfully, you will see `Hello from Docker!` message.
+
+### Install MuSHR Docker Container
+
+https://mushr.io/tutorials/noetic_quickstart/
+
+```
+mkdir -p ~/catkin_ws/src
+
+cd ~/catkin_ws/src
+
+#clone repository
+git clone --branch noetic https://github.com/prl-mushr/mushr.git
+
+#run install script
+./mushr/mushr_utils/install/mushr_install.bash
+```
+
+Select options as below:
+- Are you install on robot and need all the sensor drivers?: ``y``
+- Building from scratch?: ``n``
+
 ### Running MuSHR Noetic Docker Image
 
-For every new terminal session, run the following command to initiate the docker image.
+Open another terminal (you can close the current one) or source .bashrc. Then run the commands below:
 ```
 mushr_noetic
 ```
+At the first run, it will start initiating the Docker container.
+
+On the terminal running the Docker container, build catkin_ws with the scripts below:
+
+```
+cd catkin_ws && catkin build
+```
+
+Add source script to `.bashrc`.
+```
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+
+source .bashrc
+```
+
+
+### (Optional) Setup for Logitech F710 Joystick Controller
+Normally, Logitech F710 joystick does not require any additional installation other than the default `joystick` Ubuntu package. However, specifially for Nvidia Jetson, there is a hardware compatibility issue. Out of the box, the controller's dongle is first recognized then gets disconnected after any single input from the controller.
+
+This can be fixed by installing a module in this documentation repository. Run the following shell commands and reboot.
+
+```
+cd logitech-f710-module
+chmod +x install-module-fluent.sh
+./install-module-fluent.sh
+```
+
+After a re-boot, the functionality can be tested with the following command on the Docker container:
+```
+jstest /dev/input/js0 #js0 is the most commonly found device name
+```
+
+If `jstest` is not found, install `joystick` package.
+```
+sudo apt-get install joystick
+```
+
+It may fail at first, but plugging out and back in then waiting for 5 seconds usually fixes it.
+
+The original repository for the module installation is here: https://github.com/jetsonhacks/logitech-f710-module
 

@@ -64,7 +64,7 @@ sudo vim /usr/share/glib-2.0/schemas/org.gnome.Vino.gschema.xml
 Add the following code.
 
 ```
-<key name=’enabled’ type=’b’>
+<key name='enabled' type='b'>
 <summary>Enable remote access to the desktop</summary>
 <description>
 If true, allows remote access to the desktop via the RFB

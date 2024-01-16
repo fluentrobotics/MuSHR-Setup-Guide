@@ -19,5 +19,5 @@ This guide will use Ubuntu 20.04 and ROS noetic.
 [Setting up MuSHR on Real Robot](mushr_onboard_setup.md)
 
 ## Setting up PuSHR on Desktop
-[Setting up MuSHR on Desktop](pushr_desktop_setup.md)
+[Setting up PuSHR on Desktop](pushr_desktop_setup.md)
 

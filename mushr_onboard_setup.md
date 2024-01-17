@@ -226,3 +226,29 @@ It may fail at first, but plugging out and back in then waiting for 5 seconds us
 
 The original repository for the module installation is here: https://github.com/jetsonhacks/logitech-f710-module
 
+## Teleoperation Test
+
+In our lab, we have two different joystick controllers, PS4 Dual Shock 4 and Logitech F710.
+
+Dual Shock 4               |  F710
+:-------------------------:|:-------------------------:
+![Dual Shock 4](images/dualshock4.jpg) |  ![F710 controller](images/f710.jpg)
+
+Dual Shock 4 is a bluetooth device, and it is paired with the MuSHR car number 1. Logitech F710 uses a usb dongle, so it is visually easy to find out with car is paired with an F710.
+
+If MuSHR system is setup properly as described above, the teleoperation can be tested by starting the corresponding ROS node. Be sure to confirm the IP address of the car you are trying to test, which is preferred to be 192.168.1.1{car_number} on the lab network as described above.
+
+Also, make sure VESC is powered with enough of battery charge. If the battery to VESC is not charged sufficiently, VESC may communicate but may not drive the motor.
+
+Initiate an SSH, VNC, or even connect Jetson Nano directly to a monitor, and run the following commands.
+
+
+```console
+#initiate mushr_noetic docker container if not started
+mushr_noetic
+
+#start teleoperation
+roslaunch mushr_base teleop.launch
+```
+
+By default, the safty lock is the left bumper switch.

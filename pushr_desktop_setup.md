@@ -42,7 +42,7 @@ roslaunch mushr_coordination mushr_coordination.launch cars_file:=4cars.yaml
 roslaunch clcbs_ros clcbs_ros.launch
 roslaunch mushr_pixelart_mpc multi_sim.launch
 rviz -d $(rospack find clcbs_ros)/rviz/clcbs.rviz
-roslaunch clcbs_ros init_clcbs.launch benchmark_file:=ex3.yaml
+roslaunch clcbs_ros init_clcbs.launch benchmark_file:=ex3.yaml map_server:=0
 ```
 
 You should now see the robots moving on RViz.
